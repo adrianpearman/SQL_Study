@@ -1,0 +1,267 @@
+Spreadsheets to Databases
+
+Spreadsheets
+One time analysis
+Quickly need to chart information
+Reasonable data set size
+
+Databases
+Data Integrity
+Massive Data that Spreadsheets can't handle
+Quickly combine datasets
+Automate steps for reuse
+Can support data for websites and applications
+
+Database Platform Options
+PostgreSQL
+MySQL
+Microsoft Access
+SQLite
+
+SQL - Standard Query Language
+
+PostgreSQL
+pgAdmin - the GUI for viewing the databases
+
+Using pgAdmin:
+Creating a Databases
+Using GUI - right click database and select 'Create' then 'Database'
+command line interface - CREATE DATABASE #DBNAME
+
+Deleting a Databases
+Using GUI - right click on database and select 'DROP/DELETE'
+
+Restoring a Database
+Table Schema - Table names and data types with no data.
+Using GUI - Create New Database -> Select 'Restore' -> Choose File to Restore from.
+
+
+SELECT *
+- not good practice to pul all of the data with an '*'
+- by convention all the sql calls should be capitalized but the SQL language does not require that to be hte case.
+i.e SELECT * FROM users;
+
+DISTINCT
+- allows for only the distinct values (only one occurance)
+i.e SELECT DISTINCT release_year FROM film;
+
+SELECT WHERE
+- queries a specific row for information=
+> - Greater than.
+< - Less than,
+>= - Greater than or equal to
+<= - Less than or equal to
+AND
+OR
+<> or !=
+
+COUNT - return the number of rows WHERE the criterion is met
+i.e: SELECT COUNT(*) FROM payment
+
+LIMIT - return a set amount of rows
+SELECT * FROM customer LIMIT 10;
+
+ORDER BY - will return the rows in either ascending or DESCending order.
+SELECT * FROM customer ORDER BY first_name ASC
+SELECT * FROM customer ORDER BY first_name DESC
+
+BETWEEN  - returns the values between and low and high variable
+i.e SELECT customer_id, amount FROM payment WHERE amount BETWEEN 8 and 10 LIMIT 10
+SELECT customer_id, amount FROM payment WHERE amount not BETWEEN 8 and 10 LIMIT 10
+
+IN - checks if a specific value is within a list of values
+i.e. SELECT customer_id, rental_id, return_date FROM rental WHERE customer_id IN (1,20,30)
+SELECT customer_id, rental_id, return_date FROM rental WHERE customer_id NOT IN (1,20,30)
+
+LIKE - returns rows WHERE the result criterions are similar to the criterion specified. this known as pattern matching. This search method utilizes wildcard variables as well.
+ILIKE - runs the same function but is not case sensitive
+'%' matching a sequence of characters
+'_' matching a single a character
+SELECT * FROM customer WHERE first_name LIKE 'A%' LIMIT 10
+
+MIN -  returns the minimum value within a range
+SELECT MIN(amount) FROM payment
+
+MAX - returns the maximum value within a range
+SELECT MAX(amount) FROM payment
+
+AVG - returns the average of a column
+Round is used to set a set amount of decimal points
+i.e SELECT ROUND(AVG(amount),2) FROM payment
+
+SUM - returns the total of a column
+SELECT SUM(amount) FROM payment
+
+GROUP BY - divides the row returned by the select statement into groups
+i.e SELECT rating, COUNT(rating) FROM film GROUP BY rating
+
+HAVING - filters groups rows WHERE it does not meet a specific condition
+i.e SELECT customer_id, round(sum(amount), 2) FROM payment GROUP BY customer_id HAVING sum(amount) > 200
+
+AS - allows us rename columns or tables with an alias
+i.e. SELECT payment_id AS my_payments FROM payment
+
+JOINS - allows you to relate data in one table to a table of another
+
+INNER - produces only the set of records that match in both table A and table B
+
+FULL OUTER - produces the set of all records in Table A and Table B, with the matching records from both sides where available. If there is no match then the side will contain null
+
+LEFT OUTER JOIN with WHERE - to produce the set of records only in Table A but not in Table B, then exclude the records where we dont want from the right side via the WHERE clause.
+
+i.e.
+select film.film_id, film.title, inventory.inventory_id
+from film
+left outer join inventory on inventory.film_id = film.film_id
+where inventory.film_id is null
+order by film.film_id asc
+
+select customer.customer_id,
+first_name,
+last_name,
+email,
+amount,
+payment_date
+from customer
+inner join payment
+on payment.customer_id = customer.customer_id
+where first_name like 'Peter'
+
+UNION - combines the result set of two or more select statements into a single result set. it will remove all of the duplicates unless UNION ALL is used.
+
+TIMESTAMP - data type that retains time information
+
+EXTRACT - allows us extract a value off of the timestamp
+i.e. select extract(day from (payment_date)) from payment
+limit 5
+
+example of Mathematical SQL functions
+select customer_id+rental_id as new_id from payment
+order by new_id asc
+
+example of String concatenation
+select first_name || ' ' || last_name as full_name from customer
+
+SELF JOIN  - when you want to combiner rows with other rows in the same table. a table alias must be used so SQL can distinguish the two tables
+
+i.e. select a.customer_id, a.first_name, a.last_name,b.customer_id,  b.first_name, b.last_name
+from customer as a, customer as b
+where a.first_name = b.last_name
+
+OR
+
+select a.customer_id, a.first_name, a.last_name,b.customer_id,  b.first_name, b.last_name
+from customer as a
+join customer as b
+on a.first_name = b.last_name
+
+
+
+Tables support the following data types:
+Boolean - holds True or False
+Character - a single charecter: fixed length char & variable char
+Integers - smallint(2 bytes signed integer), int (4 byte signed intger), serial(same as int but populates a value automatically. Similar to AUTOO_INCREMENT)
+Number - float( whole number), real (aka float8 - 8 byte floating number)
+Temporal - date and times
+Special Types and Arrays
+
+Primary Keys - is column or a group of columns that is used to identify a row. A table can only have one primary key
+
+Foreign Keys is a column or a group of columns that uniquely identifies a row in another table. It refers to primary key of  another table.
+
+COLUMN CONSTRAINTS
+NOT NULL - the value in the row cannot have a value of NULL
+UNIQUE - the value of the column must be unique across the whole table
+CHECK - enables to check a condition when you insert or update data
+
+TABLE CONSTRAINTS
+UNIQUE - to force the value being stored in the column listed inside to be unique
+PRIMARY KEY
+CHECK - to check a condition before it is entered into the database
+REFERENCES - to constrain the values stored in the column that must exist in a column of another table
+
+Creating an SQL Table example:
+CREATE TABLE table_name
+(column_name TYPE column_constraint,
+table_constraint)
+INHERITS existing_table_name
+
+Creating SQL table example:
+create table account(
+user_id serial primary key,
+username varchar(50) unique not null,
+password varchar(50) not null,
+email varchar(100) unique not null,
+created_on timestamp not null,
+last_login timestamp
+)
+
+
+TABLE CHALLENGE
+Create a table to organize our potential leads! We will have the following information:
+A customer's first name, last name,email,sign-up date, and number of minutes spent on the dvd rental site. You should also have some sort of id tracker for them.
+ANSWER:
+create table customer(
+customer_id serial primary key,
+firstname varchar(255) not null,
+lastname varchar(255) not null,
+email varchar(255) unique not null,
+signup_date timestamp,
+total_site_minutes integer)
+
+
+INSERT - allows for a row to be entered into the table
+example:
+INSERT INTO table(column1, column2...)
+VALUES(value1, value2...)
+
+Inserting data from another tables
+INSERT INTO table
+SELECT column1, column2
+FROM another_table
+WHERE condition
+
+Creating a table with the same columns like another. The syntax is:
+CREATE TABLE new_copy (LIKE old_copy)
+
+Updating a table row value
+UPDATE tables
+SET column1 = value1,
+column2 = value2..
+WHERE condition
+
+Deleting a row from a table -  willl return the number of rows deleted . if non then it will return 0
+DELETE FROM table
+WHERE condition
+
+ALTER TABLE allows for changing the structure of a table.
+some examples include:
+ADD COLUMN
+DROP COLUMN
+RENAME COLUMN
+ADD CONSTRAINT
+RENAME TO
+
+DROP Table will drop(delete) the specified table.
+drop table if exists link_copy
+
+alter table link add column active boolean
+alter table link drop column columnactive
+alter table link rename column title to new_title
+alter table link rename to url_table
+
+
+The CHECK constraint that allows for the user to specify if a value in a column has met a specific requirement. It uses a boolean expression to evaluate the values
+example:
+create table new_users(
+  user_id serial primary key,
+  first_name varchar(255),
+  birth_date date check(birth_date > '1900-01-01'),
+  join_date date check(join_date > birth_date),
+  salary integer check(salary > 0)
+)
+
+
+VIEWS allows for the virtual table to be created
+example:
+create view view name as query
